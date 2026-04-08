@@ -31,7 +31,7 @@ function createEpisodeCard(episode) {
 
   const summary = document.createElement("div");
   summary.classList.add("episode-summary");
-  summary.innerHTML = episode.summary;
+  summary.textContent = episode.summary;
   episodeCard.appendChild(summary);
 
   return episodeCard;
