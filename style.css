@@ -8,3 +8,16 @@
   vertical-align: top;
   height: 400px;
 }
+.episode-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.episode-card h3 {
+  margin: 10px 0 5px 0;
+}
+
+.episode-card p {
+  margin: 5px 0;
+}
