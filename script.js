@@ -1,19 +1,19 @@
 let allEpisodes = [];
+let allEpisodesCache = null;
 
 function setup() {
   getAllEpisodes().then((episodes) => {
     allEpisodes = episodes;
     makePageForEpisodes(allEpisodes);
-
-    const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("input", handleSearch);
-
-    const selector = document.getElementById("episodeSelector");
-    selector.addEventListener("change", handleSelection);
-
     populateSelector(allEpisodes);
-
     displayCount(allEpisodes.length);
+
+    document
+      .getElementById("searchInput")
+      .addEventListener("input", handleSearch);
+    document
+      .getElementById("episodeSelector")
+      .addEventListener("change", handleSelection);
   });
 }
 
@@ -114,18 +114,11 @@ function handleSelection(event) {
   displayCount(1);
 }
 
-let allEpisodesCache = null;
-
 async function getAllEpisodes() {
-  if (allEpisodesCache !== null) {
-    return allEpisodesCache;
-  }
-
+  if (allEpisodesCache !== null) return allEpisodesCache;
   try {
     const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     allEpisodesCache = await response.json();
     return allEpisodesCache;
   } catch (error) {
