@@ -100,16 +100,12 @@ function populateSelector(episodes) {
 
 function handleSelection(event) {
   const selectedValue = event.target.value;
-  console.log("Selected value:", selectedValue);
-
   if (selectedValue === "all") {
     makePageForEpisodes(allEpisodes);
     return;
   }
 
   const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedValue);
-  console.log("Selected episode:", selectedEpisode);
-
   makePageForEpisodes([selectedEpisode]);
   displayCount(1);
 }
