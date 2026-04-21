@@ -114,13 +114,6 @@ function handleSelection(event) {
   displayCount(1);
 }
 
-getAllEpisodes().then((episodes) => {
-  allEpisodes = episodes;
-  makePageForEpisodes(allEpisodes);
-  populateSelector(allEpisodes);
-  displayCount(allEpisodes.length);
-});
-
 let allEpisodesCache = null;
 
 async function getAllEpisodes() {
