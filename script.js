@@ -116,14 +116,20 @@ getAllEpisodes().then((episodes) => {
   displayCount(allEpisodes.length);
 });
 
+let allEpisodesCache = null;
+
 async function getAllEpisodes() {
+  if (allEpisodesCache !== null) {
+    return allEpisodesCache;
+  }
+
   try {
     const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const episodes = await response.json();
-    return episodes;
+    allEpisodesCache = await response.json();
+    return allEpisodesCache;
   } catch (error) {
     console.error("Failed to fetch episodes:", error);
     return [];
