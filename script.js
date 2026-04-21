@@ -1,18 +1,17 @@
 let allEpisodes = [];
 
 function setup() {
-  allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  getAllEpisodes().then((episodes) => {
+    allEpisodes = episodes;
+    makePageForEpisodes(allEpisodes);
 
-  const searchInput = document.getElementById("searchInput");
-  searchInput.addEventListener("input", handleSearch);
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", handleSearch);
 
-  const selector = document.getElementById("episodeSelector");
-  selector.addEventListener("change", handleSelection);
+    populateSelector(allEpisodes);
 
-  populateSelector(allEpisodes);
-
-  displayCount(allEpisodes.length);
+    displayCount(allEpisodes.length);
+  });
 }
 
 function parseEpisode(episode) {
@@ -60,6 +59,7 @@ function makePageForEpisodes(episodeList) {
   rootElem.append(...episodeCards);
   return rootElem;
 }
+
 function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
 
@@ -73,10 +73,12 @@ function handleSearch(event) {
   makePageForEpisodes(filteredEpisodes);
   displayCount(filteredEpisodes.length);
 }
+
 function displayCount(count) {
   const countDisplay = document.getElementById("countDisplay");
   countDisplay.textContent = `Displaying ${count} episodes`;
 }
+
 function populateSelector(episodes) {
   const selector = document.getElementById("episodeSelector");
 
@@ -105,6 +107,27 @@ function handleSelection(event) {
 
   makePageForEpisodes([selectedEpisode]);
   displayCount(1);
+}
+
+getAllEpisodes().then((episodes) => {
+  allEpisodes = episodes;
+  makePageForEpisodes(allEpisodes);
+  populateSelector(allEpisodes);
+  displayCount(allEpisodes.length);
+});
+
+async function getAllEpisodes() {
+  try {
+    const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const episodes = await response.json();
+    return episodes;
+  } catch (error) {
+    console.error("Failed to fetch episodes:", error);
+    return [];
+  }
 }
 
 window.onload = setup;
