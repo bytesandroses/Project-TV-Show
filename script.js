@@ -8,6 +8,9 @@ function setup() {
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", handleSearch);
 
+    const selector = document.getElementById("episodeSelector");
+    selector.addEventListener("change", handleSelection);
+
     populateSelector(allEpisodes);
 
     displayCount(allEpisodes.length);
@@ -97,6 +100,7 @@ function populateSelector(episodes) {
 
 function handleSelection(event) {
   const selectedValue = event.target.value;
+  console.log("Selected value:", selectedValue);
 
   if (selectedValue === "all") {
     makePageForEpisodes(allEpisodes);
@@ -104,6 +108,7 @@ function handleSelection(event) {
   }
 
   const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedValue);
+  console.log("Selected episode:", selectedEpisode);
 
   makePageForEpisodes([selectedEpisode]);
   displayCount(1);
