@@ -122,7 +122,7 @@ async function getAllEpisodes() {
     allEpisodesCache = await response.json();
     return allEpisodesCache;
   } catch (error) {
-    console.error("Failed to fetch episodes:", error);
+    alert("Failed to fetch episodes. Please try again later.");
     return [];
   }
 }
