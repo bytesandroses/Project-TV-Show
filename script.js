@@ -2,6 +2,10 @@ let allEpisodes = [];
 let allEpisodesCache = null;
 
 function setup() {
+  const rootElem = document.getElementById("root");
+  rootElem.innerHTML =
+    "<p class='loading-message'>Loading episodes, please wait...</p>";
+
   getAllEpisodes().then((episodes) => {
     allEpisodes = episodes;
     makePageForEpisodes(allEpisodes);
