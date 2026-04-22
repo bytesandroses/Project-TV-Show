@@ -1,23 +1,29 @@
-.episode-card {
-  border: 1px solid black;
+.episode-card,
+.show-card {
+  border: 1px solid #ccc;
   border-radius: 5px;
   padding: 10px;
   margin: 10px;
   width: 300px;
   display: inline-block;
   vertical-align: top;
-  height: 400px;
 }
-.episode-card img {
+
+.episode-card img,
+.show-card img {
   width: 100%;
-  height: auto;
   border-radius: 5px;
 }
 
-.episode-card h3 {
-  margin: 10px 0 5px 0;
+.episode-card h2,
+.show-card h2 {
+  margin: 10px 0;
 }
 
-.episode-card p {
+.episode-card p,
+.show-card p,
+.episode-summary,
+.show-summary {
   margin: 5px 0;
+  line-height: 1.4;
 }
