@@ -187,6 +187,16 @@ function createShowCard(show) {
 
   const title = document.createElement("h2");
   title.textContent = show.name;
+
+  title.style.cursor = "pointer";
+  title.style.textDecoration = "underline";
+
+  title.addEventListener("click", () => {
+    document.getElementById("showSelector").value = show.id;
+
+    loadEpisodes(show.id);
+  });
+
   showCard.appendChild(title);
 
   const image = document.createElement("img");
