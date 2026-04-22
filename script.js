@@ -22,12 +22,7 @@ function fetchShows() {
       allShows = data;
       populateShowSelector(data);
 
-      // 👇 AUTO LOAD FIRST SHOW
-      const firstShow = data[0];
-      loadEpisodes(firstShow.id);
-
-      // 👇 set dropdown to match selected show
-      document.getElementById("showSelector").value = firstShow.id;
+      makePageForShows(data);
     });
 }
 
@@ -46,13 +41,16 @@ function populateShowSelector(shows) {
 
 function handleShowChange(event) {
   const showId = event.target.value;
-  if (!showId) return;
+
+  if (!showId) {
+    makePageForShows(allShows);
+    return;
+  }
 
   loadEpisodes(showId);
 }
 
 function loadEpisodes(showId) {
-  // reset search input
   document.getElementById("searchInput").value = "";
 
   if (episodeCache[showId]) {
@@ -173,6 +171,44 @@ function makePageForEpisodes(episodeList) {
   const episodeCards = parsedEpisodes.map(createEpisodeCard);
 
   rootElem.append(...episodeCards);
+}
+
+function makePageForShows(showsList) {
+  const rootElem = document.getElementById("root");
+  rootElem.innerHTML = "";
+
+  const showCards = showsList.map(createShowCard);
+  rootElem.append(...showCards);
+}
+
+function createShowCard(show) {
+  const showCard = document.createElement("article");
+  showCard.classList.add("show-card");
+
+  const title = document.createElement("h2");
+  title.textContent = show.name;
+  showCard.appendChild(title);
+
+  const image = document.createElement("img");
+  image.src = show.image ? show.image.medium : "";
+  image.alt = `${show.name} image`;
+  showCard.appendChild(image);
+
+  const details = document.createElement("div");
+  details.innerHTML = `
+    <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
+    <p><strong>Status:</strong> ${show.status}</p>
+    <p><strong>Rating:</strong> ${show.rating.average}</p>
+    <p><strong>Runtime:</strong> ${show.runtime} minutes</p>
+  `;
+  showCard.appendChild(details);
+
+  const summary = document.createElement("div");
+  summary.classList.add("show-summary");
+  summary.innerHTML = show.summary || "";
+  showCard.appendChild(summary);
+
+  return showCard;
 }
 
 window.onload = setup;
