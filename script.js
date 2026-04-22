@@ -12,6 +12,11 @@ function setup() {
   const showSelector = document.getElementById("showSelector");
   showSelector.addEventListener("change", handleShowChange);
 
+  document.getElementById("backBtn").addEventListener("click", () => {
+    document.getElementById("showSelector").value = "";
+    makePageForShows(allShows);
+  });
+
   fetchShows();
 }
 
@@ -73,6 +78,9 @@ function updateUI() {
 
   const selector = document.getElementById("episodeSelector");
   selector.innerHTML = '<option value="all">All Episodes</option>';
+
+  document.getElementById("backBtn").style.display = "inline-block";
+  selector.style.display = "inline-block";
 
   populateSelector(allEpisodes);
   displayCount(allEpisodes.length);
@@ -165,6 +173,9 @@ function makePageForEpisodes(episodeList) {
 function makePageForShows(showsList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = "";
+
+  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("episodeSelector").style.display = "none";
 
   const showCards = showsList.map(createShowCard);
   rootElem.append(...showCards);
