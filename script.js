@@ -1,12 +1,17 @@
 let allEpisodes = [];
 let allEpisodesCache = null;
 
+const errorLoadingMessage =
+  "<p class='error-message'>Failed to load episodes. Please try again later.</p>";
+
 function setup() {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML =
     "<p class='loading-message'>Loading episodes, please wait...</p>";
 
   getAllEpisodes().then((episodes) => {
+    if (episodes.length === 0) return;
+
     allEpisodes = episodes;
     makePageForEpisodes(allEpisodes);
     populateSelector(allEpisodes);
@@ -29,8 +34,8 @@ function parseEpisode(episode) {
     name: episode.name,
     season: paddedSeason,
     number: paddedNumber,
-    image: episode.image.medium,
-    summary: episode.summary,
+    image: episode.image ? episode.image.medium : null,
+    summary: episode.summary || "",
   };
 }
 
@@ -42,10 +47,12 @@ function createEpisodeCard(episode) {
   title.textContent = `${episode.name} - (S${episode.season}E${episode.number})`;
   episodeCard.appendChild(title);
 
-  const image = document.createElement("img");
-  image.src = episode.image;
-  image.alt = `${episode.name} image`;
-  episodeCard.appendChild(image);
+  if (episode.image) {
+    const image = document.createElement("img");
+    image.src = episode.image;
+    image.alt = `${episode.name} image`;
+    episodeCard.appendChild(image);
+  }
 
   const summary = document.createElement("div");
   summary.classList.add("episode-summary");
@@ -70,10 +77,12 @@ function makePageForEpisodes(episodeList) {
 function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
 
+  document.getElementById("episodeSelector").value = "all";
+
   const filteredEpisodes = allEpisodes.filter((episode) => {
     return (
       episode.name.toLowerCase().includes(searchTerm) ||
-      episode.summary.toLowerCase().includes(searchTerm)
+      (episode.summary || "").toLowerCase().includes(searchTerm)
     );
   });
 
@@ -104,12 +113,19 @@ function populateSelector(episodes) {
 
 function handleSelection(event) {
   const selectedValue = event.target.value;
+
+  document.getElementById("searchInput").value = "";
+
   if (selectedValue === "all") {
     makePageForEpisodes(allEpisodes);
+    displayCount(allEpisodes.length);
     return;
   }
 
   const selectedEpisode = allEpisodes.find((ep) => ep.id == selectedValue);
+
+  if (!selectedEpisode) return;
+
   makePageForEpisodes([selectedEpisode]);
   displayCount(1);
 }
@@ -122,7 +138,7 @@ async function getAllEpisodes() {
     allEpisodesCache = await response.json();
     return allEpisodesCache;
   } catch (error) {
-    alert("Failed to fetch episodes. Please try again later.");
+    document.getElementById("root").innerHTML = errorLoadingMessage;
     return [];
   }
 }
