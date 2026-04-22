@@ -82,6 +82,7 @@ function updateUI() {
 
 function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
+  document.getElementById("episodeSelector").value = "all";
 
   const filteredEpisodes = allEpisodes.filter((episode) => {
     return (
@@ -90,7 +91,7 @@ function handleSearch(event) {
     );
   });
 
-  makePageForEpisodes(filteredEpisodes);
+  renderEpisodes(filteredEpisodes);
   displayCount(filteredEpisodes.length);
 }
 
