@@ -21,6 +21,13 @@ function fetchShows() {
     .then((data) => {
       allShows = data;
       populateShowSelector(data);
+
+      // 👇 AUTO LOAD FIRST SHOW
+      const firstShow = data[0];
+      loadEpisodes(firstShow.id);
+
+      // 👇 set dropdown to match selected show
+      document.getElementById("showSelector").value = firstShow.id;
     });
 }
 
