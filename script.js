@@ -88,6 +88,28 @@ function updateUI() {
 
 function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
+  const currentShowId = document.getElementById("showSelector").value;
+
+  if (!currentShowId) {
+    const filteredShows = allShows.filter((show) => {
+      const inName = show.name.toLowerCase().includes(searchTerm);
+      const inSummary = (show.summary || "").toLowerCase().includes(searchTerm);
+      const inGenres = (show.genres || [])
+        .join(" ")
+        .toLowerCase()
+        .includes(searchTerm);
+
+      return inName || inSummary || inGenres;
+    });
+
+    makePageForShows(filteredShows);
+
+    const countDisplay = document.getElementById("countDisplay");
+    countDisplay.textContent = `Displaying ${filteredShows.length} shows`;
+
+    return;
+  }
+
   document.getElementById("episodeSelector").value = "all";
 
   const filteredEpisodes = allEpisodes.filter((episode) => {
@@ -98,7 +120,6 @@ function handleSearch(event) {
   });
 
   makePageForEpisodes(filteredEpisodes);
-
   displayCount(filteredEpisodes.length);
 }
 
