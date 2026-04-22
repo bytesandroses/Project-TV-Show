@@ -72,7 +72,9 @@ async function loadShowEpisodes(showId) {
     "<p class='loading-message'>Loading episodes, please wait...</p>";
 
   const episodes = await getEpisodesForShow(showId);
-  if (episodes.length === 0) return;
+  if (episodes.length === 0)
+    rootElem.innerHTML = "<p>No episodes found for this show.</p>";
+  return;
 
   allEpisodes = episodes;
   makePageForEpisodes(allEpisodes);
