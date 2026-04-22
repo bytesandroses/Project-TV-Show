@@ -1,5 +1,6 @@
 let allEpisodes = [];
-let allEpisodesCache = null;
+let allEpisodesCache = {};
+let allShows = [];
 
 const errorLoadingMessage =
   "<p class='error-message'>Failed to load episodes. Please try again later.</p>";
@@ -7,23 +8,93 @@ const errorLoadingMessage =
 function setup() {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML =
-    "<p class='loading-message'>Loading episodes, please wait...</p>";
+    "<p class='loading-message'>Loading shows, please wait...</p>";
 
-  getAllEpisodes().then((episodes) => {
-    if (episodes.length === 0) return;
+  getAllShows().then((shows) => {
+    if (shows.length === 0) return;
 
-    allEpisodes = episodes;
-    makePageForEpisodes(allEpisodes);
-    populateSelector(allEpisodes);
-    displayCount(allEpisodes.length);
+    allShows = shows;
+    populateShowSelector(allShows);
 
+    const defaultShowId = allShows[0].id;
+    document.getElementById("showSelector").value = defaultShowId;
+    loadShowEpisodes(defaultShowId);
+
+    document
+      .getElementById("showSelector")
+      .addEventListener("change", handleShowSelection);
     document
       .getElementById("searchInput")
       .addEventListener("input", handleSearch);
     document
       .getElementById("episodeSelector")
-      .addEventListener("change", handleSelection);
+      .addEventListener("change", handleEpisodeSelection);
   });
+}
+
+async function getAllShows() {
+  try {
+    const response = await fetch("https://api.tvmaze.com/shows");
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const shows = await response.json();
+    shows.sort((a, b) => a.name.localeCompare(b.name));
+    return shows;
+  } catch (error) {
+    document.getElementById("root").innerHTML =
+      "<p class='error-message'>Failed to load shows. Please try again later.</p>";
+    return [];
+  }
+}
+
+function populateShowSelector(shows) {
+  const selector = document.getElementById("showSelector");
+  selector.innerHTML = "";
+
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    selector.appendChild(option);
+  });
+}
+
+function handleShowSelection(event) {
+  const showId = event.target.value;
+  document.getElementById("searchInput").value = "";
+  document.getElementById("episodeSelector").innerHTML =
+    '<option value="all">Show all episodes</option>';
+  loadShowEpisodes(showId);
+}
+
+async function loadShowEpisodes(showId) {
+  const rootElem = document.getElementById("root");
+  rootElem.innerHTML =
+    "<p class='loading-message'>Loading episodes, please wait...</p>";
+
+  const episodes = await getEpisodesForShow(showId);
+  if (episodes.length === 0) return;
+
+  allEpisodes = episodes;
+  makePageForEpisodes(allEpisodes);
+  populateEpisodeSelector(allEpisodes);
+  displayCount(allEpisodes.length);
+}
+
+async function getEpisodesForShow(showId) {
+  if (allEpisodesCache[showId]) return allEpisodesCache[showId];
+
+  try {
+    const response = await fetch(
+      `https://api.tvmaze.com/shows/${showId}/episodes`,
+    );
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const episodes = await response.json();
+    allEpisodesCache[showId] = episodes;
+    return episodes;
+  } catch (error) {
+    document.getElementById("root").innerHTML = errorLoadingMessage;
+    return [];
+  }
 }
 
 function parseEpisode(episode) {
@@ -64,7 +135,6 @@ function createEpisodeCard(episode) {
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
-
   rootElem.innerHTML = "";
 
   const parsedEpisodes = episodeList.map(parseEpisode);
@@ -95,8 +165,9 @@ function displayCount(count) {
   countDisplay.textContent = `Displaying ${count} episodes`;
 }
 
-function populateSelector(episodes) {
+function populateEpisodeSelector(episodes) {
   const selector = document.getElementById("episodeSelector");
+  selector.innerHTML = '<option value="all">Show all episodes</option>';
 
   episodes.forEach((episode) => {
     const option = document.createElement("option");
@@ -111,7 +182,7 @@ function populateSelector(episodes) {
   });
 }
 
-function handleSelection(event) {
+function handleEpisodeSelection(event) {
   const selectedValue = event.target.value;
 
   document.getElementById("searchInput").value = "";
@@ -128,19 +199,6 @@ function handleSelection(event) {
 
   makePageForEpisodes([selectedEpisode]);
   displayCount(1);
-}
-
-async function getAllEpisodes() {
-  if (allEpisodesCache !== null) return allEpisodesCache;
-  try {
-    const response = await fetch("https://api.tvmaze.com/shows/82/episodes");
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    allEpisodesCache = await response.json();
-    return allEpisodesCache;
-  } catch (error) {
-    document.getElementById("root").innerHTML = errorLoadingMessage;
-    return [];
-  }
 }
 
 window.onload = setup;
