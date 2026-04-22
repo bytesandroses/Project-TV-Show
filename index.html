@@ -12,21 +12,18 @@
   </head>
 
   <body>
-    <div class="controls">
-      <label for="showSelector">Select Show: </label>
-      <select id="showSelector"></select>
+    <input type="text" id="searchInput" placeholder="Search episodes..." />
 
-      <label for="episodeSelector">Select Episode:</label>
-      <select id="episodeSelector">
-        <option value="all">All Episodes</option>
-      </select>
+    <select id="showSelector">
+      <option value="">Select a show...</option>
+    </select>
 
-      <input type="text" id="searchInput" placeholder="Search episodes..." />
+    <p id="countDisplay"></p>
 
-      <p id="countDisplay"></p>
-    </div>
+    <select id="episodeSelector">
+      <option value="all">All Episodes</option>
+    </select>
 
-    <!-- Episodes -->
     <div id="root"></div>
   </body>
 </html>
